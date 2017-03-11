@@ -32,6 +32,24 @@ var AutoModule;
         };
         return Engine;
     }());
+    var CustomEngine = (function () {
+        function CustomEngine() {
+        }
+        CustomEngine.prototype.toString = function () {
+            return "Custom Engine - 450 HP";
+        };
+        CustomEngine.prototype.start = function (callback) {
+            setTimeout(function () {
+                callback(true, "Custom Engine");
+            }, 1000);
+        };
+        CustomEngine.prototype.stop = function (callback) {
+            setTimeout(function () {
+                callback(true, "Custom Engine");
+            }, 1000);
+        };
+        return CustomEngine;
+    }());
     var Accesory = (function () {
         function Accesory(accessoryNumber, title) {
             this.accessoryNumber = accessoryNumber;
@@ -120,7 +138,8 @@ var AutoModule;
         };
         return Truck;
     }(Auto));
-    var myTruck = new Truck(40000, new Engine(300, "V8"), "Ford", "F-150", "Short Bed", true);
+    //var myTruck = new Truck(40000, new Engine(300, "V8"), "Ford", "F-150", "Short Bed", true);
+    var myTruck = new Truck(40000, new CustomEngine(), "Ford", "F-150", "Short Bed", true);
     myTruck.setAccesories(new Accesory(1234, "Chrome Package"), new Accesory(4321, "Towing Package"), new Accesory(5467, "Sunroof"));
     console.log(myTruck.toString());
     myTruck.engine.start(function (status, engineType) {

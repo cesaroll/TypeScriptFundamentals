@@ -1,6 +1,27 @@
 module AutoModule {
 
-    class Engine {
+    interface IEngine {
+
+        start(callback: (startStatus: boolean, engineType: string) => void): void;
+        stop(callback: (startStatus: boolean, engineType: string) => void): void;
+
+    }
+
+    interface IAutoOptions {
+        basePrice: number;
+        engine: IEngine;
+        state: string;
+        make: string;
+        model: string;
+        year: number;
+    }
+
+    interface ITruckOptions extends IAutoOptions {
+        bedLength: string;
+        fourByFour: boolean;
+    }
+
+    class Engine implements IEngine {
 
             constructor(public horsePower: number,
                         public engineType: string) {
@@ -25,6 +46,25 @@ module AutoModule {
 
         }
 
+    class CustomEngine implements IEngine {
+
+        toString(): string {
+                return `Custom Engine - 450 HP`;
+            }
+
+            start(callback: (startStatus: boolean, engineType: string) => void) {
+                setTimeout( () => {
+                    callback(true, "Custom Engine");
+                }, 1000);
+            }
+
+            stop(callback: (stopStatus: boolean, engineType: string) => void) {
+                setTimeout( () => {
+                    callback(true, "Custom Engine");
+                }, 1000);
+            }
+    }
+
     class Accesory {
         constructor(public accessoryNumber: number, public title: string) {
 
@@ -34,17 +74,21 @@ module AutoModule {
     class Auto {
 
         private _basePrice: number;
-        private _engine: Engine;
+        private _engine: IEngine;
+        state: string;
         make: string;
         model: string;
+        year: number;
         private _accesoryList: string;
         
         // Constructor
-        constructor(basePrice: number, engine: Engine, make: string, model: string) {
-            this.basePrice = basePrice;
-            this.engine = engine;
-            this.make = make;
-            this.model = model;
+        constructor(options: IAutoOptions) {
+            this.basePrice = options.basePrice;
+            this.engine = options.engine;
+            this.state = options.state;
+            this.make = options.make;
+            this.model = options.model;
+            this.year = options.year;
         }
 
         // Functions
@@ -91,11 +135,11 @@ module AutoModule {
             this._basePrice = value;
         }
 
-        get engine(): Engine {
+        get engine(): IEngine {
             return this._engine;
         }
 
-        set engine(value: Engine) {
+        set engine(value: IEngine) {
             if(!value) throw `Please supply an engine.`;
             this._engine = value;
         }
@@ -104,9 +148,13 @@ module AutoModule {
 
     class Truck extends Auto {
         
-        constructor(basePrice: number, engine: Engine, make: string, model: string, 
-            public bedLength: string, public fourByFour: boolean) {
-                super(basePrice, engine, make, model);
+        bedLength: string;
+        fourByFour: boolean;
+
+        constructor(options: ITruckOptions,) {
+                super(options);
+                this.bedLength = options.bedLength;
+                this.fourByFour = options.fourByFour;
         }
 
         toString(): string {
@@ -118,7 +166,18 @@ module AutoModule {
         }
     }
 
-    var myTruck = new Truck(40000, new Engine(300, "V8"), "Ford", "F-150", "Short Bed", true);
+    //var myTruck = new Truck(40000, new Engine(300, "V8"), "Ford", "F-150", "Short Bed", true);
+    //var myTruck = new Truck(40000, new CustomEngine(), "Ford", "F-150", "Short Bed", true);
+    var myTruck = new Truck({
+        basePrice: 45000,
+        engine: new CustomEngine(),
+        state: "Texas",
+        make: "Ford",
+        model: "F-150",
+        year: 2017,
+        bedLength: "Short Bed",
+        fourByFour: true
+    });
 
     myTruck.setAccesories(new Accesory(1234, "Chrome Package"), new Accesory(4321, "Towing Package"),
                             new Accesory(5467, "Sunroof"));
